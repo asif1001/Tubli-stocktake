@@ -1,7 +1,10 @@
 // Initialize EmailJS with your User ID (Public Key)
-(function(){
+(function() {
     emailjs.init("H1NlmM-K_eGlclzfa"); // Replace with your actual User ID (Public Key)
 })();
+
+// Google Apps Script URL and Deployment ID
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzz75Xa1s_lTr782mNss8iAKHdcL6lfT9IwAvWn-HhMrX69nle_PA8KUHbCPJRhRkS3/exec";
 
 // Function to generate the reference number (YearMonthDayHourMinute)
 function generateReferenceNo() {
@@ -20,70 +23,67 @@ function getCurrentDateTime() {
     return now.toLocaleString(); // This will return the date and time in local format
 }
 
-// Load form entries from local storage
-function loadEntries() {
-    const entries = JSON.parse(localStorage.getItem('entries')) || [];
-    return entries;
-}
-
-// Save form entries to local storage
-function saveEntries(entries) {
-    localStorage.setItem('entries', JSON.stringify(entries));
-}
-
 // Initialize form and reset values
-let entries = loadEntries();
 let referenceNo = generateReferenceNo();
 let dateTime = getCurrentDateTime();
 resetForm();  // Ensure all fields except Reference No and Date/Time are empty
 
-// Function to reset the form while keeping Reference No, Date, and Branch
+// Function to reset the form while keeping Reference No, Date, and Checker name
 function resetForm() {
     referenceNo = generateReferenceNo();  // Generate new reference no
     dateTime = getCurrentDateTime();      // Generate new date and time
     document.getElementById('referenceNo').value = referenceNo;
     document.getElementById('dateTime').value = dateTime;
-    document.getElementById('branch').value = '';
-    document.getElementById('location').value = '';
-    document.getElementById('partNo').value = '';
-    document.getElementById('qty').value = '';
+    document.getElementById('checkerName').value = '';  // Reset Checker name
+    document.getElementById('locator').value = '';      // Reset Locator
+    document.getElementById('lpnNo').value = '';        // Reset LPN NO
 }
 
-// Store form data and clear relevant fields
+// Function to send form data to Google Sheets via Apps Script Web App
+function sendFormDataToGoogleSheet(data) {
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(data)
+    }).then(() => {
+        console.log('Data sent to Google Sheets successfully.');
+    }).catch(error => {
+        console.error('Failed to send data to Google Sheets:', error);
+    });
+}
+
+// Store form data, clear relevant fields, and send to Google Sheets
 function storeFormData() {
-    const newEntry = {
+    const formData = {
         referenceNo: document.getElementById('referenceNo').value,
-        dateTime: document.getElementById('dateTime').value,
-        branch: document.getElementById('branch').value,
-        location: document.getElementById('location').value,
-        partNo: document.getElementById('partNo').value,
-        qty: document.getElementById('qty').value
+        datetime: document.getElementById('dateTime').value,
+        Checker: document.getElementById('checkerName').value,  // "Checker" field
+        locator: document.getElementById('locator').value,       // "Locator" field
+        LPN: document.getElementById('lpnNo').value              // "LPN NO" field
     };
 
-    entries.push(newEntry);  // Add a new entry
-    saveEntries(entries);    // Save entries to local storage
+    sendFormDataToGoogleSheet(formData);  // Send the data to Google Sheets
 
-    // Clear Location, Part No, and Qty after saving data
-    document.getElementById('location').value = '';
-    document.getElementById('partNo').value = '';
-    document.getElementById('qty').value = '';
-    document.getElementById('location').focus();  // Move focus back to Location
+    // Clear Locator and LPN NO after saving data
+    document.getElementById('locator').value = '';
+    document.getElementById('lpnNo').value = '';
+    document.getElementById('locator').focus();  // Move focus back to Locator
 }
 
-// Function to generate text content for the email (in a key-value pair format, like we did in the battery project)
+// Function to generate text content for the email (in a key-value pair format)
 function generateTextContent() {
     let textContent = `SOP Binning Data:\n\n`;
 
-    // Iterate over each saved entry and append it as key-value pairs
-    entries.forEach(entry => {
-        textContent += `Reference No: ${entry.referenceNo}\n`;
-        textContent += `Date/Time: ${entry.dateTime}\n`;
-        textContent += `Branch: ${entry.branch}\n`;
-        textContent += `Location: ${entry.location}\n`;
-        textContent += `Part No: ${entry.partNo}\n`;
-        textContent += `Qty: ${entry.qty}\n`;
-        textContent += `-------------------------\n`; // Separator for each entry
-    });
+    // Add the current entry as key-value pairs for email content
+    textContent += `Reference No: ${document.getElementById('referenceNo').value}\n`;
+    textContent += `Date/Time: ${document.getElementById('dateTime').value}\n`;
+    textContent += `Checker name: ${document.getElementById('checkerName').value}\n`;
+    textContent += `Locator: ${document.getElementById('locator').value}\n`;
+    textContent += `LPN NO: ${document.getElementById('lpnNo').value}\n`;
+    textContent += `-------------------------\n`;
 
     return textContent;
 }
@@ -93,7 +93,7 @@ function sendEmailWithText() {
     const referenceNo = document.getElementById('referenceNo').value; // Get the current reference number
 
     // Collect all form data and format it into key-value pairs
-    const emailContent = generateTextContent(); // Generate the email content from saved form data
+    const emailContent = generateTextContent(); // Generate the email content from current form data
 
     // EmailJS params for sending the email
     const params = {
@@ -115,60 +115,11 @@ function sendEmailWithText() {
 
 // Event listener for the Submit button to send email
 document.getElementById('submitBtn').addEventListener('click', function() {
+    storeFormData();  // Save and send data to Google Sheets
     sendEmailWithText();  // Send the collected form data via email
 });
 
-// Function to download all saved data as a text file (Optional)
-document.getElementById('downloadBtn').addEventListener('click', function() {
-    const textContent = generateTextContent(); // Generate text content for download
-    downloadTextFile("form_data.txt", textContent); // Download the text file with all form data
-});
-
-// Helper function to trigger file download
-function downloadTextFile(filename, text) {
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-}
-
-// Field navigation: from Location -> Part No -> Qty
-function setupFieldNavigation() {
-    const locationField = document.getElementById('location');
-    const partNoField = document.getElementById('partNo');
-    const qtyField = document.getElementById('qty');
-
-    // Helper function to handle Enter/Tab key navigation
-    function handleKeyNavigation(event, nextField) {
-        if (event.key === 'Enter' || event.key === 'Tab') {
-            event.preventDefault(); // Prevent default tab behavior
-            nextField.focus(); // Move focus to the next field
-        }
-    }
-
-    // Move from Location to Part No
-    locationField.addEventListener('keydown', function(event) {
-        handleKeyNavigation(event, partNoField);
-    });
-
-    // Move from Part No to Qty
-    partNoField.addEventListener('keydown', function(event) {
-        handleKeyNavigation(event, qtyField);
-    });
-
-    // Save data and move back to Location from Qty
-    qtyField.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter' || event.key === 'Tab') {
-            event.preventDefault(); // Prevent default tab behavior
-            storeFormData();  // Save the data when Qty is entered
-        }
-    });
-}
-
 // Set up field navigation on page load
 window.onload = function() {
-    document.getElementById('branch').focus();  // Automatically focus on Branch field when form loads
-    setupFieldNavigation();  // Set up the sequence of cursor movement
+    document.getElementById('checkerName').focus();  // Automatically focus on Checker name field when form loads
 };
