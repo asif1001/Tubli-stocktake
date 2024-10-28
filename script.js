@@ -56,7 +56,7 @@ function storeFormData() {
     };
 
     // Send data to Google Sheets using the provided Web App URL
-    fetch("https://script.google.com/macros/s/AKfycbyeQ0pgzdTN9G-QP1-8oCET8TQnA5tbNB7n3Omq7L35vCUnvVketRj3Mo8v_bwhWCw/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbzC583yhPSWu4f6DljPD5Ia56EFg4cqHqNxPr2ZywLdSxKs4e_jHVR39hMFwivgTg6Q/exec", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
