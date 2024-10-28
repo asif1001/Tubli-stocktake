@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Form with EmailJS</title>
+    <title>SOP & RC Binning Form</title>
     <!-- Include EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <!-- Link to the external JavaScript file -->
@@ -53,12 +53,6 @@
         button:hover {
             background-color: #218838;
         }
-        #downloadBtn {
-            background-color: #007bff;
-        }
-        #downloadBtn:hover {
-            background-color: #0056b3;
-        }
         @media (max-width: 768px) {
             form {
                 width: 90%;
@@ -67,7 +61,7 @@
     </style>
 </head>
 <body>
-    <h1>SOP & RC Binning</h1>
+    <h1>SOP & RC Binning Form</h1>
     <form>
         <!-- Reference No -->
         <label for="referenceNo">Reference No:</label>
@@ -77,18 +71,23 @@
         <label for="dateTime">Date and Time:</label>
         <input type="text" id="dateTime" name="dateTime" readonly>
 
-        <!-- Branch -->
-        <label for="branch">Checker:</label>
-        <input type="text" id="branch" name="branch" required>
+        <!-- Checker Name -->
+        <label for="checkerName">Checker:</label>
+        <input type="text" id="checkerName" name="checkerName" required>
 
-        <!-- Location -->
-        <label for="location">Locator:</label>
-        <input type="text" id="location" name="location" required>
+        <!-- Locator -->
+        <label for="locator">Locator:</label>
+        <input type="text" id="locator" name="locator" required>
 
-        <!-- Part No -->
-        <label for="partNo">LPN:</label>
-        <input type="text" id="partNo" name="partNo" required>
+        <!-- LPN NO -->
+        <label for="lpnNo">LPN NO:</label>
+        <input type="text" id="lpnNo" name="lpnNo" required>
 
+        <!-- Submit Button -->
+        <button type="button" id="submitBtn">Submit</button>
+
+        <!-- Reset Button -->
+        <button type="button" onclick="resetForm()">Reset</button>
     </form>
 </body>
 </html>
