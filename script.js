@@ -1,6 +1,6 @@
-// Initialize EmailJS with your User ID (Public Key)
+// Initialize EmailJS with your User ID (Public Key) - optional if you no longer need EmailJS
 (function() {
-    emailjs.init("H1NlmM-K_eGlclzfa"); // Replace with your actual User ID (Public Key)
+    emailjs.init("H1NlmM-K_eGlclzfa"); // Replace with your actual User ID (Public Key), if needed
 })();
 
 // Google Apps Script URL and Deployment ID
@@ -73,50 +73,9 @@ function storeFormData() {
     document.getElementById('locator').focus();  // Move focus back to Locator
 }
 
-// Function to generate text content for the email (in a key-value pair format)
-function generateTextContent() {
-    let textContent = `SOP Binning Data:\n\n`;
-
-    // Add the current entry as key-value pairs for email content
-    textContent += `Reference No: ${document.getElementById('referenceNo').value}\n`;
-    textContent += `Date/Time: ${document.getElementById('dateTime').value}\n`;
-    textContent += `Checker name: ${document.getElementById('checkerName').value}\n`;
-    textContent += `Locator: ${document.getElementById('locator').value}\n`;
-    textContent += `LPN NO: ${document.getElementById('lpnNo').value}\n`;
-    textContent += `-------------------------\n`;
-
-    return textContent;
-}
-
-// Function to send email with the collected form data using EmailJS
-function sendEmailWithText() {
-    const referenceNo = document.getElementById('referenceNo').value; // Get the current reference number
-
-    // Collect all form data and format it into key-value pairs
-    const emailContent = generateTextContent(); // Generate the email content from current form data
-
-    // EmailJS params for sending the email
-    const params = {
-        to_email: "asif.s@ekkanoo.com.bh,Abdul.R@Ekkanoo.com.bh,enrico.b@Ekkanoo.com.bh,fadhel.h@Ekkanoo.com.bh", // Multiple recipients
-        subject: `SOP-Binning ${referenceNo}`, // Dynamic subject with reference number
-        message: emailContent  // The email body, with all saved data
-    };
-
-    // Use EmailJS to send the email
-    emailjs.send("service_s2ro656", "template_nox6zuh", params)
-        .then(function(response) {
-            console.log('Email sent successfully', response.status, response.text);
-            alert("Email has been sent successfully!"); // Notify the user
-        }, function(error) {
-            console.error('Failed to send email. Error details:', error);
-            alert("Failed to send email. Please try again."); // Notify the user of failure
-        });
-}
-
-// Event listener for the Submit button to send email
+// Event listener for the Submit button to store form data
 document.getElementById('submitBtn').addEventListener('click', function() {
     storeFormData();  // Save and send data to Google Sheets
-    sendEmailWithText();  // Send the collected form data via email
 });
 
 // Set up field navigation on page load
