@@ -12,10 +12,10 @@ function generateReferenceNo() {
     return `${year}${month}${date}${hours}${minutes}`;
 }
 
-// Function to get the current date and time
+// Function to get the current date and time (used as a timestamp)
 function getCurrentDateTime() {
     const now = new Date();
-    return now.toLocaleString(); // This will return the date and time in local format
+    return now.toLocaleString(); // Returns the date and time in local format
 }
 
 // Initialize form and reset values
@@ -50,9 +50,13 @@ function sendFormDataToGoogleSheet(data) {
 
 // Store form data, clear LPN field, and send to Google Sheets
 function storeFormData() {
+    // Update Date and Time with current timestamp each time data is saved
+    const currentDateTime = getCurrentDateTime();
+    document.getElementById('dateTime').value = currentDateTime;
+
     const formData = {
         referenceNo: document.getElementById('referenceNo').value,
-        datetime: document.getElementById('dateTime').value,
+        datetime: currentDateTime,  // Use the current timestamp here
         Checker: document.getElementById('checkerName').value,  // Checker name field
         locator: document.getElementById('locator').value,       // Locator field
         LPN: document.getElementById('lpnNo').value              // LPN NO field
