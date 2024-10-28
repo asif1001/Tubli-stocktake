@@ -23,7 +23,7 @@ function getCurrentDateTime() {
 // Initialize form and reset values
 let referenceNo = generateReferenceNo();
 let dateTime = getCurrentDateTime();
-resetForm();  // Ensures all fields except Reference No and Date/Time are empty
+initializeForm();  // Ensures all fields except Reference No and Date/Time are empty
 
 // Function to reset only LPN No and refresh Date and Time
 function resetLPNAndDate() {
@@ -33,8 +33,8 @@ function resetLPNAndDate() {
     document.getElementById('lpnNo').focus();  // Move focus back to LPN No
 }
 
-// Function to reset the form while keeping Reference No, Date/Time, and Checker Name
-function resetForm() {
+// Function to initialize the form with Reference No and Date/Time
+function initializeForm() {
     referenceNo = generateReferenceNo();  // Generate new reference no
     dateTime = getCurrentDateTime();      // Generate new date and time
     document.getElementById('referenceNo').value = referenceNo;
@@ -68,17 +68,19 @@ function storeFormData() {
         if (data.status === "success") {
             console.log("Data saved to Google Sheets successfully");
             alert("Data has been saved to Google Sheets!"); // Notify the user
+            resetLPNAndDate();  // Reset only LPN No field and refresh Date/Time
         } else {
             console.error("Failed to save data to Google Sheets:", data.message);
             alert("Failed to save data to Google Sheets. Please try again.");
         }
     })
-    .catch(error => console.error("Error:", error));
-
-    resetLPNAndDate();  // Reset only LPN No field and refresh Date/Time
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred while saving data. Please check your connection or try again.");
+    });
 }
 
-// Set up field navigation
+// Set up field navigation to control cursor flow
 function setupFieldNavigation() {
     const checkerNameField = document.getElementById('checkerName');
     const locatorField = document.getElementById('locator');
@@ -111,7 +113,6 @@ function setupFieldNavigation() {
 
 // Initialize form and field navigation on page load
 window.onload = function() {
-    document.getElementById('referenceNo').value = referenceNo;
-    document.getElementById('dateTime').value = dateTime;
+    initializeForm();
     setupFieldNavigation();
 };
