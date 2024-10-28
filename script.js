@@ -1,9 +1,4 @@
-// Initialize EmailJS with your User ID (Public Key)
-(function(){
-    emailjs.init("H1NlmM-K_eGlclzfa"); // Replace with your actual User ID (Public Key)
-})();
-
-// Function to generate the reference number (YearMonthDayHourMinute)
+// Function to generate a unique reference number (YearMonthDayHourMinute)
 function generateReferenceNo() {
     const now = new Date();
     const year = now.getFullYear();
@@ -17,35 +12,27 @@ function generateReferenceNo() {
 // Function to get the current date and time
 function getCurrentDateTime() {
     const now = new Date();
-    return now.toLocaleString(); // Returns the date and time in local format
+    return now.toLocaleString(); // Returns date and time in local format
 }
 
-// Initialize form and reset values
-let referenceNo = generateReferenceNo();
-let dateTime = getCurrentDateTime();
-initializeForm();  // Ensures all fields except Reference No and Date/Time are empty
+// Initialize form fields with reference number and current date/time
+function initializeForm() {
+    const referenceNo = generateReferenceNo();
+    const dateTime = getCurrentDateTime();
+
+    document.getElementById('referenceNo').value = referenceNo;
+    document.getElementById('dateTime').value = dateTime;
+    document.getElementById('checkerName').focus();  // Set focus on Checker Name
+}
 
 // Function to reset only LPN No and refresh Date and Time
 function resetLPNAndDate() {
-    dateTime = getCurrentDateTime();  // Refresh date and time
-    document.getElementById('dateTime').value = dateTime;
-    document.getElementById('lpnNo').value = '';  // Clear only LPN No field
-    document.getElementById('lpnNo').focus();  // Move focus back to LPN No
+    document.getElementById('dateTime').value = getCurrentDateTime(); // Refresh date and time
+    document.getElementById('lpnNo').value = ''; // Clear only LPN No field
+    document.getElementById('lpnNo').focus();  // Set focus back to LPN No for new entry
 }
 
-// Function to initialize the form with Reference No and Date/Time
-function initializeForm() {
-    referenceNo = generateReferenceNo();  // Generate new reference no
-    dateTime = getCurrentDateTime();      // Generate new date and time
-    document.getElementById('referenceNo').value = referenceNo;
-    document.getElementById('dateTime').value = dateTime;
-    document.getElementById('checkerName').value = '';
-    document.getElementById('locator').value = '';
-    document.getElementById('lpnNo').value = '';
-    document.getElementById('checkerName').focus();  // Start focus on Checker Name
-}
-
-// Function to save data to Google Sheets
+// Function to save form data to Google Sheets
 function storeFormData() {
     const newEntry = {
         referenceNo: document.getElementById('referenceNo').value,
@@ -55,7 +42,7 @@ function storeFormData() {
         lpnNo: document.getElementById('lpnNo').value
     };
 
-    // Send data to Google Sheets using the provided Web App URL
+    // Send data to Google Sheets using the Web App URL
     fetch("https://script.google.com/macros/s/AKfycbzC583yhPSWu4f6DljPD5Ia56EFg4cqHqNxPr2ZywLdSxKs4e_jHVR39hMFwivgTg6Q/exec", {
         method: "POST",
         headers: {
@@ -63,55 +50,60 @@ function storeFormData() {
         },
         body: JSON.stringify(newEntry)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Network response was not ok. Status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.status === "success") {
             console.log("Data saved to Google Sheets successfully");
             alert("Data has been saved to Google Sheets!"); // Notify the user
-            resetLPNAndDate();  // Reset only LPN No field and refresh Date/Time
+            resetLPNAndDate();  // Clear only the LPN No field and refresh Date/Time
         } else {
-            console.error("Failed to save data to Google Sheets:", data.message);
+            console.error("Failed to save data:", data.message);
             alert("Failed to save data to Google Sheets. Please try again.");
         }
     })
     .catch(error => {
-        console.error("Error:", error);
+        console.error("Error occurred during fetch request:", error);
         alert("An error occurred while saving data. Please check your connection or try again.");
     });
 }
 
-// Set up field navigation to control cursor flow
+// Set up field navigation and auto-submit on LPN No entry
 function setupFieldNavigation() {
     const checkerNameField = document.getElementById('checkerName');
     const locatorField = document.getElementById('locator');
     const lpnNoField = document.getElementById('lpnNo');
 
-    // Move from Checker Name to Locator
+    // Move focus from Checker Name to Locator
     checkerNameField.addEventListener('keydown', function(event) {
         if (event.key === 'Enter' || event.key === 'Tab') {
             event.preventDefault();
-            locatorField.focus();  // Move focus to Locator
+            locatorField.focus();
         }
     });
 
-    // Move from Locator to LPN No
+    // Move focus from Locator to LPN No
     locatorField.addEventListener('keydown', function(event) {
         if (event.key === 'Enter' || event.key === 'Tab') {
             event.preventDefault();
-            lpnNoField.focus();  // Move focus to LPN No
+            lpnNoField.focus();
         }
     });
 
-    // When LPN No is entered, store data and reset LPN No
+    // When LPN No is entered, submit form data and reset LPN No
     lpnNoField.addEventListener('keydown', function(event) {
         if (event.key === 'Enter' || event.key === 'Tab') {
             event.preventDefault();
-            storeFormData();  // Save data and reset LPN No and Date/Time
+            storeFormData();  // Save data and reset only the LPN No field
         }
     });
 }
 
-// Initialize form and field navigation on page load
+// Initialize the form on page load and set up navigation
 window.onload = function() {
     initializeForm();
     setupFieldNavigation();
