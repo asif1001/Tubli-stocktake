@@ -61,8 +61,8 @@ function storeFormData() {
     entries.push(newEntry);  // Add a new entry to local storage entries
     saveEntries(entries);    // Save entries to local storage
 
-    // Send data to Google Sheets
-    fetch("YOUR_WEB_APP_URL", {  // Replace YOUR_WEB_APP_URL with the deployed Web App URL
+    // Send data to Google Sheets using the provided Web App URL
+    fetch("https://script.google.com/macros/s/AKfycbyeQ0pgzdTN9G-QP1-8oCET8TQnA5tbNB7n3Omq7L35vCUnvVketRj3Mo8v_bwhWCw/exec", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
