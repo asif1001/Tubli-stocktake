@@ -43,14 +43,12 @@ function sendFormDataToGoogleSheet(data) {
         body: new URLSearchParams(data)
     }).then(() => {
         console.log('Data sent to Google Sheets successfully.');
-        alert("Data has been submitted successfully!"); // Success message
     }).catch(error => {
         console.error('Failed to send data to Google Sheets:', error);
-        alert("Failed to submit data. Please try again."); // Failure message
     });
 }
 
-// Store form data and send to Google Sheets
+// Store form data, clear LPN field, and send to Google Sheets
 function storeFormData() {
     const formData = {
         referenceNo: document.getElementById('referenceNo').value,
@@ -62,15 +60,41 @@ function storeFormData() {
 
     sendFormDataToGoogleSheet(formData);  // Send the data to Google Sheets
 
-    // Clear Locator and LPN NO after saving data
-    resetForm();
-    document.getElementById('locator').focus();  // Move focus back to Locator
+    // Clear only the LPN NO field after saving data
+    document.getElementById('lpnNo').value = '';
+    document.getElementById('lpnNo').focus();  // Set focus back to LPN NO for next entry
 }
 
-// Event listener for the Submit button to store form data
-document.getElementById('submitBtn').addEventListener('click', function() {
-    storeFormData();  // Save and send data to Google Sheets
+// Function to change the locator without affecting other fields
+function changeLocator() {
+    document.getElementById('locator').value = ''; // Clear only the Locator field
+    document.getElementById('locator').focus();    // Set focus back to Locator
+}
+
+// Event listeners for handling Enter key navigation and submission after entering LPN NO
+document.getElementById('checkerName').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        document.getElementById('locator').focus(); // Move to Locator field
+    }
 });
 
-// Set up initial form values on page load
-window.onload = initializeForm;
+document.getElementById('locator').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        document.getElementById('lpnNo').focus(); // Move to LPN NO field
+    }
+});
+
+document.getElementById('lpnNo').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        storeFormData(); // Submit data after entering LPN NO
+    }
+});
+
+// Set up initial form values and focus on Checker Name field on page load
+window.onload = function() {
+    initializeForm();
+    document.getElementById('checkerName').focus();
+};
