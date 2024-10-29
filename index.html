@@ -4,21 +4,84 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Data Entry Form</title>
+  <style>
+    /* Style the body for center alignment and padding */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Responsive form styling */
+    #dataForm {
+      width: 100%;
+      max-width: 400px; /* Limits form width to 400px */
+      padding: 1em;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Style for form labels */
+    label {
+      display: block;
+      margin-top: 1em;
+      font-weight: bold;
+    }
+
+    /* Style for input fields */
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.3em;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+
+    /* Style for the "last LPN entered" section */
+    #lastLpnContainer {
+      margin-top: 1em;
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    /* Style for submit button */
+    button {
+      width: 100%;
+      padding: 0.7em;
+      margin-top: 1.5em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
   <h1>Data Entry Form</h1>
   <form id="dataForm">
     <label for="referenceNo">Reference No:</label>
-    <input type="text" id="referenceNo" name="referenceNo" readonly><br><br>
+    <input type="text" id="referenceNo" name="referenceNo" readonly>
 
     <label for="dateTime">Date and Time:</label>
-    <input type="text" id="dateTime" name="dateTime" readonly><br><br>
+    <input type="text" id="dateTime" name="dateTime" readonly>
 
     <label for="checkerName">Checker Name:</label>
-    <input type="text" id="checkerName" name="checkerName" required><br><br>
+    <input type="text" id="checkerName" name="checkerName" required>
 
     <label for="locator">Locator:</label>
-    <input type="text" id="locator" name="locator" required><br><br>
+    <input type="text" id="locator" name="locator" required>
 
     <!-- Display last entered LPN here -->
     <div id="lastLpnContainer">
@@ -26,11 +89,9 @@
     </div>
 
     <label for="lpnNo">LPN No:</label>
-    <input type="text" id="lpnNo" name="lpnNo" required><br><br>
+    <input type="text" id="lpnNo" name="lpnNo" required>
 
     <button type="submit">Submit</button>
   </form>
-
-  <!-- JavaScript goes here -->
 </body>
 </html>
