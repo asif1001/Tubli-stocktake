@@ -18,43 +18,26 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            flex-direction: column;
-        }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-        }
-        h1 {
-            padding: 10px;
-            font-size: 1.5em;
-            margin-top: 0;
         }
         form {
             width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
-            margin-top: 10px;
         }
-        .form-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .form-row label {
-            flex: 1;
-            min-width: 120px;
-            text-align: right;
+        label {
+            display: block;
+            margin: 10px 0 5px;
             font-size: 1em;
         }
-        .form-row input {
-            flex: 2;
+        input {
             width: 100%;
             padding: 10px;
+            margin: 5px 0 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 1em;
@@ -69,7 +52,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 1em;
-            margin-top: 10px;
+            margin-bottom: 10px;
         }
         button:hover {
             background-color: #218838;
@@ -78,21 +61,15 @@
         #lastLpnContainer {
             font-size: 0.9em;
             color: #555;
-            margin: 10px 0;
-            text-align: left;
+            margin: 10px 0 5px;
         }
 
         /* Mobile-specific adjustments */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.2em;
-            }
-            .form-row label {
-                min-width: 100px;
-                text-align: left;
-            }
-            .form-group {
-                min-width: 100%; /* Make form groups full width on mobile */
+            form {
+                width: 90%; /* Make form width 90% on small screens */
+                padding: 15px;
+                margin: 10px;
             }
             input, button {
                 font-size: 0.9em;
@@ -105,46 +82,34 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>TUBLI STOCK COUNT</h1> <!-- Centered heading here -->
-        <form>
-            <!-- Date and Reference No in one line -->
-            <div class="form-row">
-                <label for="dateTime">Date and Time:</label>
-                <input type="text" id="dateTime" name="dateTime" readonly>
-            </div>
-            <div class="form-row">
-                <label for="referenceNo">Reference No:</label>
-                <input type="text" id="referenceNo" name="referenceNo" readonly>
-            </div>
+    <form>
+        <!-- Reference No -->
+        <label for="referenceNo">Reference No:</label>
+        <input type="text" id="referenceNo" name="referenceNo" readonly>
 
-            <!-- Checker Name -->
-            <div class="form-row">
-                <label for="checkerName">Checker:</label>
-                <input type="text" id="checkerName" name="checkerName" required>
-            </div>
+        <!-- Date and Time -->
+        <label for="dateTime">Date and Time:</label>
+        <input type="text" id="dateTime" name="dateTime" readonly>
 
-            <!-- Locator -->
-            <div class="form-row">
-                <label for="locator">Locator:</label>
-                <input type="text" id="locator" name="locator" required>
-            </div>
+        <!-- Checker Name -->
+        <label for="checkerName">Checker:</label>
+        <input type="text" id="checkerName" name="checkerName" required>
 
-            <!-- Last LPN Entered Display -->
-            <div id="lastLpnContainer" class="form-row">
-                <label>Last LPN Entered:</label>
-                <span id="lastLpn">None</span>
-            </div>
+        <!-- Locator -->
+        <label for="locator">Locator:</label>
+        <input type="text" id="locator" name="locator" required>
 
-            <!-- LPN NO -->
-            <div class="form-row">
-                <label for="lpnNo">LPN NO:</label>
-                <input type="text" id="lpnNo" name="lpnNo" required>
-            </div>
+        <!-- Last LPN Entered Display -->
+        <div id="lastLpnContainer">
+            <strong>Last LPN Entered:</strong> <span id="lastLpn">None</span>
+        </div>
 
-            <!-- Change Locator Button -->
-            <button type="button" onclick="changeLocator()">Change Locator</button>
-        </form>
-    </div>
+        <!-- LPN NO -->
+        <label for="lpnNo">LPN NO:</label>
+        <input type="text" id="lpnNo" name="lpnNo" required>
+
+        <!-- Change Locator Button -->
+        <button type="button" onclick="changeLocator()">Change Locator</button>
+    </form>
 </body>
 </html>
