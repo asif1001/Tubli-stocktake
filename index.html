@@ -1,97 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Entry Form</title>
-  <style>
-    /* Style the body for center alignment and padding */
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      font-family: Arial, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUBLI STOCK COUNT</title> <!-- Updated title here -->
+    <!-- Link to the external JavaScript file -->
+    <script src="script.js" defer></script>
 
-    /* Responsive form styling */
-    #dataForm {
-      width: 100%;
-      max-width: 400px; /* Limits form width to 400px */
-      padding: 1em;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Style for form labels */
-    label {
-      display: block;
-      margin-top: 1em;
-      font-weight: bold;
-    }
-
-    /* Style for input fields */
-    input[type="text"] {
-      width: 100%;
-      padding: 0.5em;
-      margin-top: 0.3em;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1em;
-    }
-
-    /* Style for the "last LPN entered" section */
-    #lastLpnContainer {
-      margin-top: 1em;
-      font-size: 0.9em;
-      color: #555;
-    }
-
-    /* Style for submit button */
-    button {
-      width: 100%;
-      padding: 0.7em;
-      margin-top: 1.5em;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 1em;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+    <!-- CSS for styling and mobile responsiveness -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            padding: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            form {
+                width: 90%;
+            }
+        }
+        /* Style for Last LPN display */
+        #lastLpnContainer {
+            font-size: 0.9em;
+            color: #555;
+            margin: 10px 0 5px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Data Entry Form</h1>
-  <form id="dataForm">
-    <label for="referenceNo">Reference No:</label>
-    <input type="text" id="referenceNo" name="referenceNo" readonly>
+    <h1>TUBLI STOCK COUNT</h1> <!-- Updated heading here -->
+    <form>
+        <!-- Reference No -->
+        <label for="referenceNo">Reference No:</label>
+        <input type="text" id="referenceNo" name="referenceNo" readonly>
 
-    <label for="dateTime">Date and Time:</label>
-    <input type="text" id="dateTime" name="dateTime" readonly>
+        <!-- Date and Time -->
+        <label for="dateTime">Date and Time:</label>
+        <input type="text" id="dateTime" name="dateTime" readonly>
 
-    <label for="checkerName">Checker Name:</label>
-    <input type="text" id="checkerName" name="checkerName" required>
+        <!-- Checker Name -->
+        <label for="checkerName">Checker:</label>
+        <input type="text" id="checkerName" name="checkerName" required>
 
-    <label for="locator">Locator:</label>
-    <input type="text" id="locator" name="locator" required>
+        <!-- Locator -->
+        <label for="locator">Locator:</label>
+        <input type="text" id="locator" name="locator" required>
 
-    <!-- Display last entered LPN here -->
-    <div id="lastLpnContainer">
-      <strong>Last LPN Entered:</strong> <span id="lastLpn"></span>
-    </div>
+        <!-- Last LPN Entered Display -->
+        <div id="lastLpnContainer">
+            <strong>Last LPN Entered:</strong> <span id="lastLpn">None</span>
+        </div>
 
-    <label for="lpnNo">LPN No:</label>
-    <input type="text" id="lpnNo" name="lpnNo" required>
+        <!-- LPN NO -->
+        <label for="lpnNo">LPN NO:</label>
+        <input type="text" id="lpnNo" name="lpnNo" required>
 
-    <button type="submit">Submit</button>
-  </form>
+        <!-- Change Locator Button -->
+        <button type="button" onclick="changeLocator()">Change Locator</button>
+    </form>
 </body>
 </html>
