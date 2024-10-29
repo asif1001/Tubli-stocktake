@@ -64,6 +64,9 @@ function storeFormData() {
 
     sendFormDataToGoogleSheet(formData);  // Send the data to Google Sheets
 
+    // Display the last entered LPN
+    document.getElementById('lastLpn').textContent = formData.LPN;
+
     // Clear only the LPN NO field after saving data
     document.getElementById('lpnNo').value = '';
     document.getElementById('lpnNo').focus();  // Set focus back to LPN NO for next entry
