@@ -20,20 +20,24 @@
             min-height: 100vh;
             flex-direction: column;
         }
-        h1 {
+        .container {
+            width: 100%;
+            max-width: 600px;
             text-align: center;
+        }
+        h1 {
             padding: 10px;
             font-size: 1.5em;
             margin-top: 0;
         }
         form {
             width: 100%;
-            max-width: 600px;
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
+            margin-top: 10px;
         }
         .form-row {
             display: flex;
@@ -84,10 +88,6 @@
             h1 {
                 font-size: 1.2em;
             }
-            form {
-                width: 90%; /* Make form width 90% on small screens */
-                padding: 15px;
-            }
             .form-group {
                 min-width: 100%; /* Make form groups full width on mobile */
             }
@@ -102,39 +102,41 @@
     </style>
 </head>
 <body>
-    <h1>TUBLI STOCK COUNT</h1> <!-- Centered heading here -->
-    <form>
-        <!-- Date and Reference No in one line -->
-        <div class="form-row">
-            <div class="form-group">
-                <label for="dateTime">Date and Time:</label>
-                <input type="text" id="dateTime" name="dateTime" readonly>
+    <div class="container">
+        <h1>TUBLI STOCK COUNT</h1> <!-- Centered heading here -->
+        <form>
+            <!-- Date and Reference No in one line -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dateTime">Date and Time:</label>
+                    <input type="text" id="dateTime" name="dateTime" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="referenceNo">Reference No:</label>
+                    <input type="text" id="referenceNo" name="referenceNo" readonly>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="referenceNo">Reference No:</label>
-                <input type="text" id="referenceNo" name="referenceNo" readonly>
+
+            <!-- Checker Name -->
+            <label for="checkerName">Checker:</label>
+            <input type="text" id="checkerName" name="checkerName" required>
+
+            <!-- Locator -->
+            <label for="locator">Locator:</label>
+            <input type="text" id="locator" name="locator" required>
+
+            <!-- Last LPN Entered Display -->
+            <div id="lastLpnContainer">
+                <strong>Last LPN Entered:</strong> <span id="lastLpn">None</span>
             </div>
-        </div>
 
-        <!-- Checker Name -->
-        <label for="checkerName">Checker:</label>
-        <input type="text" id="checkerName" name="checkerName" required>
+            <!-- LPN NO -->
+            <label for="lpnNo">LPN NO:</label>
+            <input type="text" id="lpnNo" name="lpnNo" required>
 
-        <!-- Locator -->
-        <label for="locator">Locator:</label>
-        <input type="text" id="locator" name="locator" required>
-
-        <!-- Last LPN Entered Display -->
-        <div id="lastLpnContainer">
-            <strong>Last LPN Entered:</strong> <span id="lastLpn">None</span>
-        </div>
-
-        <!-- LPN NO -->
-        <label for="lpnNo">LPN NO:</label>
-        <input type="text" id="lpnNo" name="lpnNo" required>
-
-        <!-- Change Locator Button -->
-        <button type="button" onclick="changeLocator()">Change Locator</button>
-    </form>
+            <!-- Change Locator Button -->
+            <button type="button" onclick="changeLocator()">Change Locator</button>
+        </form>
+    </div>
 </body>
 </html>
