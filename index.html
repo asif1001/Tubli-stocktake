@@ -41,22 +41,20 @@
         }
         .form-row {
             display: flex;
-            flex-wrap: wrap;
+            align-items: center;
             gap: 10px;
+            margin-bottom: 15px;
         }
-        .form-group {
+        .form-row label {
             flex: 1;
-            min-width: 45%;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
+            min-width: 120px;
+            text-align: right;
             font-size: 1em;
         }
-        input {
+        .form-row input {
+            flex: 2;
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 1em;
@@ -80,13 +78,18 @@
         #lastLpnContainer {
             font-size: 0.9em;
             color: #555;
-            margin: 10px 0 5px;
+            margin: 10px 0;
+            text-align: left;
         }
 
         /* Mobile-specific adjustments */
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.2em;
+            }
+            .form-row label {
+                min-width: 100px;
+                text-align: left;
             }
             .form-group {
                 min-width: 100%; /* Make form groups full width on mobile */
@@ -107,32 +110,37 @@
         <form>
             <!-- Date and Reference No in one line -->
             <div class="form-row">
-                <div class="form-group">
-                    <label for="dateTime">Date and Time:</label>
-                    <input type="text" id="dateTime" name="dateTime" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="referenceNo">Reference No:</label>
-                    <input type="text" id="referenceNo" name="referenceNo" readonly>
-                </div>
+                <label for="dateTime">Date and Time:</label>
+                <input type="text" id="dateTime" name="dateTime" readonly>
+            </div>
+            <div class="form-row">
+                <label for="referenceNo">Reference No:</label>
+                <input type="text" id="referenceNo" name="referenceNo" readonly>
             </div>
 
             <!-- Checker Name -->
-            <label for="checkerName">Checker:</label>
-            <input type="text" id="checkerName" name="checkerName" required>
+            <div class="form-row">
+                <label for="checkerName">Checker:</label>
+                <input type="text" id="checkerName" name="checkerName" required>
+            </div>
 
             <!-- Locator -->
-            <label for="locator">Locator:</label>
-            <input type="text" id="locator" name="locator" required>
+            <div class="form-row">
+                <label for="locator">Locator:</label>
+                <input type="text" id="locator" name="locator" required>
+            </div>
 
             <!-- Last LPN Entered Display -->
-            <div id="lastLpnContainer">
-                <strong>Last LPN Entered:</strong> <span id="lastLpn">None</span>
+            <div id="lastLpnContainer" class="form-row">
+                <label>Last LPN Entered:</label>
+                <span id="lastLpn">None</span>
             </div>
 
             <!-- LPN NO -->
-            <label for="lpnNo">LPN NO:</label>
-            <input type="text" id="lpnNo" name="lpnNo" required>
+            <div class="form-row">
+                <label for="lpnNo">LPN NO:</label>
+                <input type="text" id="lpnNo" name="lpnNo" required>
+            </div>
 
             <!-- Change Locator Button -->
             <button type="button" onclick="changeLocator()">Change Locator</button>
