@@ -1,5 +1,5 @@
 // Google Apps Script URL for submitting data
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx6yUcY_cMTgyRlcaboo73E8DvBalJvtQ9zM3K53b_9zD7Vqu1G6JgXr5QcnQBmgENu/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyz3dN4CoQlmGetlmAWbRq7_9x1LSttnMwBN0LWcIMNdcOe930RzCdU-bzYDhuzMWs1/exec";
 
 // Function to generate a unique Reference Number with username
 function generateReferenceNo(username) {
