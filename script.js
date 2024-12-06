@@ -1,5 +1,5 @@
 // Google Apps Script URL for submitting data
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzz75Xa1s_lTr782mNss8iAKHdcL6lfT9IwAvWn-HhMrX69nle_PA8KUHbCPJRhRkS3/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyecDUhi01y_paTsY1u0YfISwJNuUneUqoK8FJ-EdOmIYoQOuCsRUjtuvTXgzgEzMME/exec";
 
 // Function to generate a reference number (YearMonthDayHourMinute)
 function generateReferenceNo() {
