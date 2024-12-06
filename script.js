@@ -1,6 +1,9 @@
 // Google Apps Script URL for submitting data
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyecDUhi01y_paTsY1u0YfISwJNuUneUqoK8FJ-EdOmIYoQOuCsRUjtuvTXgzgEzMME/exec";
 
+let formQueue = []; // Array to store form data temporarily
+let isSending = false; // Flag to disable the submit button while sending data
+
 // Function to generate a reference number (YearMonthDayHourMinute)
 function generateReferenceNo() {
     const now = new Date();
@@ -32,25 +35,8 @@ function resetForm() {
     document.getElementById('lpnNo').value = '';        // Reset LPN NO
 }
 
-// Function to send form data to Google Sheets via Apps Script Web App
-function sendFormDataToGoogleSheet(data) {
-    fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams(data)
-    }).then(() => {
-        console.log('Data sent to Google Sheets successfully.');
-    }).catch(error => {
-        console.error('Failed to send data to Google Sheets:', error);
-    });
-}
-
-// Store form data, clear LPN field, and send to Google Sheets
+// Function to temporarily store form data in a queue
 function storeFormData() {
-    // Update Date and Time with current timestamp each time data is saved
     const currentDateTime = getCurrentDateTime();
     document.getElementById('dateTime').value = currentDateTime;
 
@@ -62,7 +48,8 @@ function storeFormData() {
         LPN: document.getElementById('lpnNo').value              // LPN NO field
     };
 
-    sendFormDataToGoogleSheet(formData);  // Send the data to Google Sheets
+    // Add form data to the local queue
+    formQueue.push(formData);
 
     // Display the last entered LPN
     document.getElementById('lastLpn').textContent = formData.LPN;
@@ -70,6 +57,49 @@ function storeFormData() {
     // Clear only the LPN NO field after saving data
     document.getElementById('lpnNo').value = '';
     document.getElementById('lpnNo').focus();  // Set focus back to LPN NO for next entry
+
+    // Disable the submit button temporarily
+    disableSubmitButton();
+}
+
+// Function to send queued form data to Google Sheets
+function sendQueuedData() {
+    if (formQueue.length > 0 && !isSending) {
+        isSending = true;
+
+        // Send each item in the queue to Google Sheets
+        const dataToSend = [...formQueue]; // Copy the queue
+        formQueue = []; // Clear the queue
+
+        dataToSend.forEach(data => {
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(data)
+            }).then(() => {
+                console.log('Data sent to Google Sheets successfully.');
+            }).catch(error => {
+                console.error('Failed to send data to Google Sheets:', error);
+                // Re-add data to the queue if sending fails
+                formQueue.push(data);
+            });
+        });
+
+        isSending = false; // Re-enable sending
+    }
+}
+
+// Function to disable the submit button temporarily
+function disableSubmitButton() {
+    const submitButton = document.getElementById('submitBtn');
+    submitButton.disabled = true;
+
+    setTimeout(() => {
+        submitButton.disabled = false;
+    }, 30000); // Re-enable after 30 seconds
 }
 
 // Function to change the locator without affecting other fields
@@ -104,4 +134,7 @@ document.getElementById('lpnNo').addEventListener('keydown', function(event) {
 window.onload = function() {
     initializeForm();
     document.getElementById('checkerName').focus();
+
+    // Periodically send queued data every 30 seconds
+    setInterval(sendQueuedData, 30000);
 };
