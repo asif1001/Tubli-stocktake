@@ -1,5 +1,5 @@
 // Google Apps Script URL for submitting data
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_DEPLOYMENT_URL/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx6yUcY_cMTgyRlcaboo73E8DvBalJvtQ9zM3K53b_9zD7Vqu1G6JgXr5QcnQBmgENu/exec";
 
 // Function to generate a unique Reference Number with username
 function generateReferenceNo(username) {
@@ -13,29 +13,43 @@ function generateReferenceNo(username) {
     return `${username}_${year}${month}${date}${hours}${minutes}${seconds}`;
 }
 
-// Function to get the current date and time
+// Function to get the current date and time (used as a timestamp)
 function getCurrentDateTime() {
     const now = new Date();
     return now.toLocaleString(); // Returns the date and time in local format
 }
 
-// Initialize form and reset values
+// Initialize the form with default values
 function initializeForm() {
-    const username = document.getElementById('usernameField').value || "defaultUser"; // Default username if empty
-    document.getElementById('referenceNo').value = generateReferenceNo(username);
-    document.getElementById('dateTime').value = getCurrentDateTime();
-    resetForm();
+    const username = document.getElementById('usernameField')?.value || "defaultUser"; // Default username if empty
+    const referenceNoField = document.getElementById('referenceNo');
+    const dateTimeField = document.getElementById('dateTime');
+
+    if (referenceNoField && dateTimeField) {
+        referenceNoField.value = generateReferenceNo(username);
+        dateTimeField.value = getCurrentDateTime();
+    } else {
+        console.error("Reference number or date/time field is missing in the form.");
+    }
+
+    resetForm(); // Reset other fields
 }
 
-// Reset all form fields except Reference No and Date/Time
+// Function to reset form fields except Reference No and Date/Time
 function resetForm() {
-    document.getElementById('checkerName').value = '';
-    document.getElementById('locator').value = '';
-    document.getElementById('lpnNo').value = '';
+    const checkerNameField = document.getElementById('checkerName');
+    const locatorField = document.getElementById('locator');
+    const lpnNoField = document.getElementById('lpnNo');
+
+    if (checkerNameField) checkerNameField.value = '';
+    if (locatorField) locatorField.value = '';
+    if (lpnNoField) lpnNoField.value = '';
 }
 
-// Function to send form data to Google Sheets
-function sendDataToGoogleSheets(data) {
+// Function to send form data to Google Sheets via Apps Script Web App
+function sendFormDataToGoogleSheet(data) {
+    console.log('Sending form data:', data);
+
     fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         headers: {
@@ -43,14 +57,16 @@ function sendDataToGoogleSheets(data) {
         },
         body: new URLSearchParams(data),
     })
-        .then(response => response.json())
-        .then(responseJson => {
-            if (responseJson.status === "success") {
-                console.log('Data submitted successfully:', responseJson.message);
-                removeFromQueue(); // Remove successfully sent data from the queue
-                processQueue();    // Process the next item in the queue
+        .then(response => response.text())
+        .then(responseText => {
+            console.log('Server Response:', responseText);
+
+            // Parse the response to confirm success
+            const jsonResponse = JSON.parse(responseText || "{}");
+            if (jsonResponse.status === "success") {
+                console.log('Data submitted successfully.');
             } else {
-                console.error('Server Error:', responseJson.message);
+                console.error('Server returned an error:', jsonResponse.message);
             }
         })
         .catch(error => {
@@ -58,62 +74,46 @@ function sendDataToGoogleSheets(data) {
         });
 }
 
-// Local storage queue management
-function addToQueue(data) {
-    const queue = JSON.parse(localStorage.getItem('dataQueue')) || [];
-    queue.push(data);
-    localStorage.setItem('dataQueue', JSON.stringify(queue));
-    processQueue(); // Start processing the queue
-}
-
-function removeFromQueue() {
-    const queue = JSON.parse(localStorage.getItem('dataQueue')) || [];
-    queue.shift(); // Remove the first item
-    localStorage.setItem('dataQueue', JSON.stringify(queue));
-}
-
-function processQueue() {
-    const queue = JSON.parse(localStorage.getItem('dataQueue')) || [];
-    if (queue.length > 0) {
-        sendDataToGoogleSheets(queue[0]); // Send the first item in the queue
-    }
-}
-
-// Store form data and add it to the local queue
+// Store form data, clear the LPN field, and send to Google Sheets
 function storeFormData() {
     const currentDateTime = getCurrentDateTime();
-    document.getElementById('dateTime').value = currentDateTime;
 
     const formData = {
-        referenceNo: document.getElementById('referenceNo').value,
+        referenceNo: document.getElementById('referenceNo')?.value || "N/A",
         datetime: currentDateTime,
-        Checker: document.getElementById('checkerName').value,
-        locator: document.getElementById('locator').value,
-        LPN: document.getElementById('lpnNo').value,
+        Checker: document.getElementById('checkerName')?.value || "N/A",
+        locator: document.getElementById('locator')?.value || "N/A",
+        LPN: document.getElementById('lpnNo')?.value || "N/A",
     };
 
-    addToQueue(formData); // Add data to the queue
-    document.getElementById('lastLpn').textContent = formData.LPN; // Display last entered LPN
-    document.getElementById('lpnNo').value = '';
-    document.getElementById('lpnNo').focus();
+    console.log('Form Data to be sent:', formData);
+
+    sendFormDataToGoogleSheet(formData);
+
+    const lpnField = document.getElementById('lpnNo');
+    if (lpnField) {
+        document.getElementById('lastLpn').textContent = formData.LPN;
+        lpnField.value = ''; // Clear LPN field after submission
+        lpnField.focus();    // Set focus back to LPN field
+    }
 }
 
-// Event listeners for Enter key navigation and submission
-document.getElementById('checkerName').addEventListener('keydown', function (event) {
+// Event listeners for Enter key navigation
+document.getElementById('checkerName')?.addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
         event.preventDefault();
-        document.getElementById('locator').focus();
+        document.getElementById('locator')?.focus();
     }
 });
 
-document.getElementById('locator').addEventListener('keydown', function (event) {
+document.getElementById('locator')?.addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
         event.preventDefault();
-        document.getElementById('lpnNo').focus();
+        document.getElementById('lpnNo')?.focus();
     }
 });
 
-document.getElementById('lpnNo').addEventListener('keydown', function (event) {
+document.getElementById('lpnNo')?.addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
         event.preventDefault();
         storeFormData();
@@ -123,5 +123,5 @@ document.getElementById('lpnNo').addEventListener('keydown', function (event) {
 // Set up initial form values and focus on Checker Name field on page load
 window.onload = function () {
     initializeForm();
-    document.getElementById('checkerName').focus();
+    document.getElementById('checkerName')?.focus();
 };
