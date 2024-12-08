@@ -1,10 +1,9 @@
 // Google Apps Script URL for submitting data
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyecDUhi01y_paTsY1u0YfISwJNuUneUqoK8FJ-EdOmIYoQOuCsRUjtuvTXgzgEzMME/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxnAk-7dtrl05p_iaQnoV4Rx-arFTfm322BL5YMA4KJ4Zq3I_wWgqvCu2Z4G1iQwfIe/exec";
 
-let formQueue = []; // Array to store form data temporarily
-let isSending = false; // Flag to disable the submit button while sending data
+let formQueue = []; // Array to temporarily store form data
 
-// Function to generate a reference number (YearMonthDayHourMinute)
+// Function to generate a unique reference number (YearMonthDayHourMinuteSecondMillisecond)
 function generateReferenceNo() {
     const now = new Date();
     const year = now.getFullYear();
@@ -12,7 +11,9 @@ function generateReferenceNo() {
     const date = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    return `${year}${month}${date}${hours}${minutes}`;
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+    return `${year}${month}${date}${hours}${minutes}${seconds}${milliseconds}`;
 }
 
 // Function to get the current date and time (used as a timestamp)
@@ -43,63 +44,53 @@ function storeFormData() {
     const formData = {
         referenceNo: document.getElementById('referenceNo').value,
         datetime: currentDateTime,  // Use the current timestamp here
-        Checker: document.getElementById('checkerName').value,  // Checker name field
-        locator: document.getElementById('locator').value,       // Locator field
-        LPN: document.getElementById('lpnNo').value              // LPN NO field
+        checkerName: document.getElementById('checkerName').value,  // Checker name field
+        locator: document.getElementById('locator').value,          // Locator field
+        lpnNo: document.getElementById('lpnNo').value               // LPN NO field
     };
 
     // Add form data to the local queue
     formQueue.push(formData);
 
     // Display the last entered LPN
-    document.getElementById('lastLpn').textContent = formData.LPN;
+    document.getElementById('lastLpn').textContent = formData.lpnNo;
 
     // Clear only the LPN NO field after saving data
     document.getElementById('lpnNo').value = '';
     document.getElementById('lpnNo').focus();  // Set focus back to LPN NO for next entry
 
-    // Disable the submit button temporarily
-    disableSubmitButton();
+    // Log the queued data for debugging
+    console.log('Form data queued:', formData);
 }
 
 // Function to send queued form data to Google Sheets
 function sendQueuedData() {
-    if (formQueue.length > 0 && !isSending) {
-        isSending = true;
+    if (formQueue.length > 0) {
+        // Prepare batch payload
+        const payload = JSON.stringify(formQueue);
 
-        // Send each item in the queue to Google Sheets
-        const dataToSend = [...formQueue]; // Copy the queue
-        formQueue = []; // Clear the queue
-
-        dataToSend.forEach(data => {
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams(data)
-            }).then(() => {
-                console.log('Data sent to Google Sheets successfully.');
-            }).catch(error => {
-                console.error('Failed to send data to Google Sheets:', error);
-                // Re-add data to the queue if sending fails
-                formQueue.push(data);
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: payload
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Batch data sent successfully.');
+                    formQueue = []; // Clear the queue after successful submission
+                } else {
+                    console.error('Error in response:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Failed to send batch data:', error);
             });
-        });
-
-        isSending = false; // Re-enable sending
+    } else {
+        console.log('No data to send.');
     }
-}
-
-// Function to disable the submit button temporarily
-function disableSubmitButton() {
-    const submitButton = document.getElementById('submitBtn');
-    submitButton.disabled = true;
-
-    setTimeout(() => {
-        submitButton.disabled = false;
-    }, 30000); // Re-enable after 30 seconds
 }
 
 // Function to change the locator without affecting other fields
@@ -108,33 +99,9 @@ function changeLocator() {
     document.getElementById('locator').focus();    // Set focus back to Locator
 }
 
-// Event listeners for handling Enter key navigation and submission after entering LPN NO
-document.getElementById('checkerName').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        document.getElementById('locator').focus(); // Move to Locator field
-    }
-});
-
-document.getElementById('locator').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        document.getElementById('lpnNo').focus(); // Move to LPN NO field
-    }
-});
-
-document.getElementById('lpnNo').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        storeFormData(); // Submit data after entering LPN NO
-    }
-});
-
-// Set up initial form values and focus on Checker Name field on page load
+// Set up initial form values on page load
 window.onload = function() {
     initializeForm();
     document.getElementById('checkerName').focus();
-
-    // Periodically send queued data every 30 seconds
-    setInterval(sendQueuedData, 30000);
 };
+
